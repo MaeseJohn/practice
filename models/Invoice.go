@@ -6,7 +6,7 @@ type Invoice struct {
 	Name       string `validate:"required,alphanum"`
 	Price      int    `validate:"required"`
 	Funds      int
-	Status     string `validate:"oneof=open waiting close"`
+	Status     string `validate:"oneof=open waitting close"`
 	ExpireDate string `validate:"required,datetime=2006-01-02,alloweddate"`
 }
 
@@ -26,10 +26,10 @@ func (i *Invoice) AllowendPurcharseFunds(prucharseFunds int) bool {
 	return available >= prucharseFunds
 }
 
-// If the invoice has been fully purcharsed its status changes to "waiting"
+// If the invoice has been fully purcharsed its status changes to "waitting"
 func (i *Invoice) Sold() {
 	if i.Price == i.Funds {
-		i.Status = "waiting"
+		i.Status = "waitting"
 	}
 }
 

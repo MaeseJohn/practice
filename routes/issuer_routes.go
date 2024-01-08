@@ -61,8 +61,8 @@ func ApproveInvoiceHandler(c echo.Context) error {
 		return c.String(http.StatusNotFound, err.Error())
 	}
 
-	if invoice.Status != "waiting" {
-		return c.String(http.StatusBadRequest, "Invoice not waiting")
+	if invoice.Status != "waitting" {
+		return c.String(http.StatusBadRequest, "Invoice not waitting")
 	}
 
 	var invoiceRecordFunds int
@@ -76,7 +76,7 @@ func ApproveInvoiceHandler(c echo.Context) error {
 
 	//Giving funds to issuer
 	var issuerFunds int
-	if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Find("users").Where("user_id = ?", invoice.IssuerPk).Select("funds").Scan(&issuerFunds).Error; err != nil {
+	if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Table("users").Where("user_id = ?", invoice.IssuerPk).Select("funds").Scan(&issuerFunds).Error; err != nil {
 		return c.String(http.StatusNotFound, "Issuer not found")
 	}
 

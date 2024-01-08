@@ -12,7 +12,7 @@ import (
 
 func GetInvoicesHandler(c echo.Context) error {
 	var invoices []models.Invoice
-	err := db.DataBase().Table("invoices").Where("status = ?", "open").Select("*").Scan(&invoices).Error
+	err := db.DataBase().Table("invoices").Select("*").Scan(&invoices).Error
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -41,12 +41,12 @@ func BuyInvoiceHandler(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Error handling token claims")
 	}
 
-	var exists int
-	if err := db.DataBase().Table("users").Where("user_id = ?", claims["user_id"].(string)).Select("COUNT(*)").Scan(&exists).Error; err != nil {
+	var exists string
+	if err := db.DataBase().Table("users").Where("user_id = ?", claims["user_id"].(string)).Select("email").Scan(&exists).Error; err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	if exists != 1 {
+	if exists == "" {
 		return c.String(http.StatusNotFound, "Issuer not found")
 	}
 

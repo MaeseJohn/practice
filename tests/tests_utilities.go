@@ -197,6 +197,44 @@ func CreateInvoiceRequest(invoice *models.Invoice, token string) int {
 	return resp.StatusCode
 }
 
+func GetInvoicesRequest() ([]models.Invoice, int) {
+	// Create a new request using http
+	req, err := http.NewRequest("GET", "http://localhost:3000/invoices", nil)
+	if err != nil {
+		log.Fatalln("Error on request.\n[ERROR] -", err)
+	}
+
+	// Create a Bearer string by appending string access token
+	var bearer = "Bearer " + investorToken
+
+	// Add authorization header to the req
+	req.Header.Add("Authorization", bearer)
+
+	// Send req using http Client
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalln("Error on response.\n[ERROR] -", err)
+	}
+	defer resp.Body.Close()
+
+	var invoices []models.Invoice
+
+	//Read body
+	if resp.Body != nil {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalln("Error while reading the response bytes:", err)
+		}
+		//Unmarshal body to user
+		err = json.Unmarshal(body, &invoices)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+	return invoices, resp.StatusCode
+}
+
 func BuyInvoice(invoiceId, token string, funds int) int {
 	var bodyparams struct {
 		InvoiceId     string
